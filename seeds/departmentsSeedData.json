@@ -1,0 +1,14 @@
+[
+    {
+        "name" : "Sales"
+    },
+    {
+        "name": "Finance"
+    },
+    {
+        "name": "Engineering"
+    },
+    {
+        "name": "Legal"
+    }
+]
