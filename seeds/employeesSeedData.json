@@ -1,0 +1,50 @@
+[
+    {
+      "first_name": "Fanny",
+      "last_name": "Magdalen",
+      "role_id": 1,
+      "manager_id": null
+    },
+    {
+      "first_name": "Cathleen",
+      "last_name": "Emerson",
+      "role_id": 2,
+      "manager_id": 1
+    },
+    {
+      "first_name": "Call",
+      "last_name": "Lillia",
+      "role_id": 3,
+      "manager_id": null
+    },
+    {
+      "first_name": "Lee",
+      "last_name": "Ramona",
+      "role_id": 4,
+      "manager_id": 3
+    },
+    {
+      "first_name": "Darin",
+      "last_name": "Bethanie",
+      "role_id": 5,
+      "manager_id": null
+    },
+    {
+      "first_name": "Irwin",
+      "last_name": "Marla",
+      "role_id": 6,
+      "manager_id": 5
+    },
+    {
+      "first_name": "Troy",
+      "last_name": "Patrice",
+      "role_id": 7,
+      "manager_id": null
+    },
+    {
+      "first_name": "Spring",
+      "last_name": "Herman",
+      "role_id": 8,
+      "manager_id": 7
+    }
+  ]
