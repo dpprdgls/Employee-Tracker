@@ -1,3 +1,5 @@
+//Model structure of department table
+
 const { Model, DataTypes } = require('sequelize');
 const sequelize = require('../config/connection');
 
