@@ -38,3 +38,5 @@ Employee.hasOne(Employee, {
     foreignKey:'manager_id',
     onDelete: 'CASCADE',
 });
+
+module.exports = { Department, Employee, Role };
