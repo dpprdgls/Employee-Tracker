@@ -98,6 +98,8 @@ function options() {
       // For loop used to grab employee names to be inserted below into managers column in newly created table
       for (var i = 0; i < data.length; i++) {
         const employee = data[i];
+        //If the manager_id is null, use a default value ('None')
+        const managerName = employee.manager_id ? employeeLookup[employee.manager_id] : "None";
         employeeLookup[employee.id] =
           employee.first_name + " " + employee.last_name;
       }
@@ -111,7 +113,7 @@ function options() {
             title: employee["Role.title"],
             department: employee["Role.Department.name"],
             salary: employee["Role.salary"],
-            manager: employeeLookup[employee.manager_id],
+            manager: employeeLookup[employee.manager_id] || "None",
           };
         })
       );
@@ -119,7 +121,7 @@ function options() {
       options();
     });
   };
-  
+
   // -------------- ADD -----------------
   
   // Add department
@@ -309,3 +311,4 @@ function options() {
         });
       });
   };
+

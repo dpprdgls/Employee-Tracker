@@ -37,7 +37,7 @@ Role.hasOne(Employee, {
 
 Employee.hasOne(Employee, {
     foreignKey:'manager_id',
-    onDelete: 'CASCADE',
+    onDelete: 'SET NULL',
 });
 
 module.exports = { Department, Role, Employee };
