@@ -21,13 +21,14 @@ Employee.init(
         role_id: {
             type: DataTypes.INTEGER,
             references: {
-                model: Role,
+                model: "Role",
                 key: 'id',
             },
         },
         manager_id: {
             type: DataTypes.INTEGER,
             allowNull: true,
+            defaultValue: null, //null means no manager assigned
         },
     },
     {

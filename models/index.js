@@ -1,6 +1,7 @@
 const Department = require('./department');
-const Employee = require('./employee');
 const Role = require('./role');
+const Employee = require('./employee');
+
 
 //Lets describe the relations between the tables
 
@@ -39,4 +40,4 @@ Employee.hasOne(Employee, {
     onDelete: 'CASCADE',
 });
 
-module.exports = { Department, Employee, Role };
+module.exports = { Department, Role, Employee };

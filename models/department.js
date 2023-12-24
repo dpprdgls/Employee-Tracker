@@ -1,6 +1,6 @@
 //Model structure of department table
 
-const { Model, DataTypes } = require('sequelize');
+const { DataTypes,  Model } = require('sequelize');
 const sequelize = require('../config/connection');
 
 class Department extends Model {}
@@ -10,7 +10,7 @@ Department.init(
         id: { 
             type: DataTypes.INTEGER,
             primaryKey: true,
-            autoIncrement: true
+            autoIncrement: true,
         },
         name: {
             type: DataTypes.STRING,
@@ -21,7 +21,7 @@ Department.init(
         timestamps: false,
         freezeTableName: true,
         underscored: true,
-        modelName: 'department',
+        modelName: 'Department',
     }
 );
 
