@@ -29,6 +29,7 @@ function options() {
             "Update Employee Role",
             "Delete Employee", 
             "Delete Role",
+            "Delete Department",
             //   `(Move up and down to reveal more choices)`,
           ],
           name: "employeeTracker",
@@ -52,6 +53,8 @@ function options() {
             deleteEmployee();
         } else if (answer.employeeTracker === "Delete Role") {
             deleteRole();
+        } else if (answer.employeeTracker === "Delete Department") {
+            deleteDepartment();
         } else {
             updateEmployeeRole();
         }
@@ -379,6 +382,64 @@ const deleteRole = async () => {
     // Refresh the view after deletion
     viewAllRoles();
 };
+
+const deleteDepartment = async () => {
+    let departments = await Department.findAll({
+        attributes: ["id", "name"],
+    });
+
+    departments = departments.map((department) => {
+        const plainDepartment = department.get({ plain: true });
+        return {
+            value: plainDepartment.id,
+            name: plainDepartment.name,
+        };
+    });
+
+    const answer = await inquirer.prompt([
+        {
+            type: 'list',
+            message: 'Which department would you like to delete?',
+            name: 'department_id',
+            choices: departments,
+        },
+    ]);
+
+    const departmentToDelete = departments.find((dep) => dep.value === answer.department_id);
+
+    const employeesCount = await Employee.count({
+        where: {
+            '$Role.Department.id$': answer.department_id,
+        },
+        include: [
+            {
+                model: Role,
+                include: [Department],
+            },
+        ],
+    });
+
+    if (employeesCount === 0) {
+        console.log(`Department "${departmentToDelete.name}" has been deleted.`);
+        
+        // Delete the department from the database
+        await Department.destroy({
+            where: {
+                id: answer.department_id,
+            },
+        });
+    } else {
+        console.log(`Can't delete department "${departmentToDelete.name}" because it has ${employeesCount} employee(s) assigned to it.`);
+    }
+
+    // Refresh the view after deletion
+    viewAllDepartments();
+};
+
+
+
+
+
 
 // -------------- UPDATE -----------------
   
