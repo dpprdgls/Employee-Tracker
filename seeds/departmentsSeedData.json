@@ -1,14 +1,14 @@
 [
     {
-        "name" : "Sales"
+        "name" : "Engineering"
     },
     {
         "name": "Finance"
     },
     {
-        "name": "Engineering"
+        "name": "Legal"
     },
     {
-        "name": "Legal"
+        "name": "Sales"
     }
 ]

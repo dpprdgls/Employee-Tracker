@@ -2,7 +2,6 @@
 
 const { Department, Role, Employee } = require('./models');
 const sequelize = require('./config/connection');
-
 const inquirer = require('inquirer');
 
 
@@ -28,6 +27,7 @@ function options() {
             "Add Role",
             "Add Employee",
             "Update Employee Role",
+            "Delete Employee", 
             //   `(Move up and down to reveal more choices)`,
           ],
           name: "employeeTracker",
@@ -36,19 +36,21 @@ function options() {
       // Takes in user choice, checks with equality, and then fires off corresponding function
       .then((answer) => {
         if (answer.employeeTracker === "View All Departments") {
-          viewAllDepartments();
+            viewAllDepartments();
         } else if (answer.employeeTracker === "View All Roles") {
-          viewAllRoles();
+            viewAllRoles();
         } else if (answer.employeeTracker === "View All Employees") {
-          viewAllEmployees();
+            viewAllEmployees();
         } else if (answer.employeeTracker === "Add Department") {
-          addDepartment();
+            addDepartment();
         } else if (answer.employeeTracker === "Add Role") {
-          addRole();
+            addRole();
         } else if (answer.employeeTracker === "Add Employee") {
-          addEmployee();
+            addEmployee();
+        } else if (answer.employeeTracker === "Delete Employee") {
+            deleteEmployee();
         } else {
-          updateEmployeeRole();
+            updateEmployeeRole();
         }
       });
   }
@@ -251,7 +253,54 @@ function options() {
       });
   };
   
-  // -------------- UPDATE -----------------
+// -------------- DELETE -----------------
+
+//Function to delete an employee
+
+const deleteEmployee = async () => {
+    //Get the list of employees for user selection
+
+    let employees = await Employee.findAll ({
+        attributes: [
+            ["id", "value"],
+            ["first_name", "first_name"],
+            ["last_name", "last_name"],
+        ],
+    });
+    // Restructures raw data
+    employees = employees.map((employee) => {
+        employee.get({ plain: true });
+        const employeeInfo = employee.get();
+        return {
+            name: `${employeeInfo.first_name} ${employeeInfo.last_name}`,
+            value: employeeInfo.value,
+        };
+    });
+
+    // Prompts user to select employee to be deleted
+    inquirer
+    .prompt ([
+        {
+            type: 'list',
+            message: 'Which employee would you like to delete?',
+            name: 'id',
+            choices: employees,
+        },
+    ])
+    .then(async (answer) => {
+        //Delete the selected employee
+        await Employee.destroy({
+            where: {
+                id: answer.id,
+            },
+        });
+        console.log('Employee deleted successfully.');
+        
+        viewAllEmployees();
+    });
+};
+
+// -------------- UPDATE -----------------
   
   // Update employee role
   const updateEmployeeRole = async () => {
