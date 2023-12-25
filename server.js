@@ -28,6 +28,7 @@ function options() {
             "Add Employee",
             "Update Employee Role",
             "Delete Employee", 
+            "Delete Role",
             //   `(Move up and down to reveal more choices)`,
           ],
           name: "employeeTracker",
@@ -49,6 +50,8 @@ function options() {
             addEmployee();
         } else if (answer.employeeTracker === "Delete Employee") {
             deleteEmployee();
+        } else if (answer.employeeTracker === "Delete Role") {
+            deleteRole();
         } else {
             updateEmployeeRole();
         }
@@ -191,68 +194,93 @@ function options() {
   
   // Add employee
   const addEmployee = async () => {
+    // Fetch available roles
     let roles = await Role.findAll({
       attributes: [
-        ["id", "value"],
-        ["title", "name"],
+        "id",
+        "title",
+        "department_id",
+        [sequelize.literal("`Department`.`id`"), "Department.id"],
+        [sequelize.literal("`Department`.`name`"), "Department.name"],
       ],
+      include: [{ model: Department, attributes: [] }],
     });
-    // Restructures raw data
-    roles = roles.map((role) => role.get({ plain: true }));
   
-    let managers = await Employee.findAll({
-      attributes: [
-        ["id", "value"],
-        ["first_name", "name"],
-        ["last_name", "lastName"],
-      ],
-    });
     // Restructures raw data
-    managers = managers.map((manager) => {
-      manager.get({ plain: true });
-      const managerInfo = manager.get();
+    roles = roles.map((role) => {
+      const plainRole = role.get({ plain: true });
       return {
-        name: `${managerInfo.name} ${managerInfo.lastName}`,
-        value: managerInfo.value,
+        value: plainRole.id,
+        name: plainRole.title,
+        department_id: plainRole.department_id,
+        department_name: plainRole["Department.name"],
       };
     });
-    managers.push({ type: "Null Manager", value: null });
   
-    // Prompts user for first name, last name, role, and corresponding manager
-    inquirer
-      .prompt([
-        {
-          type: "input",
-          message: "What is the first name of the new employee?",
-          name: "first_name",
-        },
-        {
-          type: "input",
-          message: "What is the last name of the new employee?",
-          name: "last_name",
-        },
-        {
-          type: "list",
-          message: "What is the role of the new employee?",
-          name: "role_id",
-          choices: roles,
-        },
-        {
-          type: "list",
-          message: "What manager would you like to assign to the new employee?",
-          name: "manager_id",
-          choices: managers,
-        },
-      ])
-      // Takes in user inputs and adds answers to database
-      .then((answer) => {
-        Employee.create(answer).then((data) => {
-          // Fires off prompts after updating database
-          options();
-        });
-      });
+    // Fetch available managers in the same department as the selected role
+    const roleAnswer = await inquirer.prompt([
+      {
+        type: "input",
+        message: "What is the first name of the new employee?",
+        name: "first_name",
+      },
+      {
+        type: "input",
+        message: "What is the last name of the new employee?",
+        name: "last_name",
+      },
+      {
+        type: "list",
+        message: "What is the role of the new employee?",
+        name: "role_id",
+        choices: roles,
+      },
+    ]);
+  
+    const selectedRole = roles.find((role) => role.value === roleAnswer.role_id);
+  
+    let managers = await Employee.findAll({
+      attributes: ["id", "first_name", "last_name", "role_id"],
+      where: {
+        role_id: roleAnswer.role_id,
+      },
+    });
+  
+    // Restructures raw data
+    managers = managers.map((manager) => {
+      const plainManager = manager.get({ plain: true });
+      return {
+        name: `${plainManager.first_name} ${plainManager.last_name}`,
+        value: plainManager.id,
+      };
+    });
+  
+    managers.push({ name: "None", value: null });
+  
+    // Prompt user to select a manager
+    const managerAnswer = await inquirer.prompt([
+      {
+        type: "list",
+        message: "What manager would you like to assign to the new employee?",
+        name: "manager_id",
+        choices: managers,
+      },
+    ]);
+  
+    // Combine user answers
+    const finalAnswer = {
+      ...roleAnswer,
+      manager_id: managerAnswer.manager_id,
+    };
+  
+    // Add the employee to the database
+    Employee.create(finalAnswer).then((data) => {
+      // Fires off prompts after updating database
+      viewAllEmployees();
+    });
   };
-  
+
+    
 // -------------- DELETE -----------------
 
 //Function to delete an employee
@@ -298,6 +326,58 @@ const deleteEmployee = async () => {
         
         viewAllEmployees();
     });
+};
+
+const deleteRole = async () => {
+    let roles = await Role.findAll({
+        attributes: [
+            "id",
+            "title",
+            [sequelize.literal("`Department`.`name`"), "department_name"],
+        ],
+        include: [{ model: Department, attributes: [] }],
+    });
+
+    roles = roles.map((role) => {
+        const plainRole = role.get({ plain: true });
+        return {
+            value: plainRole.id,
+            name: `${plainRole.title} (${plainRole.department_name})`,
+        };
+    });
+
+    const answer = await inquirer.prompt([
+        {
+            type: 'list',
+            message: 'Which role would you like to delete?',
+            name: 'role_id',
+            choices: roles,
+        },
+    ]);
+
+    const roleToDelete = roles.find((role) => role.value === answer.role_id);
+
+    const employeesCount = await Employee.count({
+        where: {
+            role_id: answer.role_id,
+        },
+    });
+
+    if (employeesCount === 0) {
+        console.log(`Role "${roleToDelete.name}" has been deleted.`);
+        
+        // Delete the role from the database
+        await Role.destroy({
+            where: {
+                id: answer.role_id,
+            },
+        });
+    } else {
+        console.log(`Can't delete role "${roleToDelete.name}" because it has ${employeesCount} employee(s) assigned to it.`);
+    }
+
+    // Refresh the view after deletion
+    viewAllRoles();
 };
 
 // -------------- UPDATE -----------------
