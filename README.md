@@ -24,10 +24,15 @@
     
     ## Usage
 
+    ![Usage Gif](/img/usage.gif)
+   
+
+
     *Instructions and examples for use:*
     
     Once the application is started, the user will be prompted to select from the list of available choices. The user will be able to view a department, role or employee table, they will also have the ability to add a new department, role, or employee to the database. They can also update an emploee's role, delete an employee or delete a role if no employees exist within that role. 
- 
+
+     [Video Link](https://drive.google.com/file/d/1gKonSccgi_U9sUg8HgyvD0ZlOM8u9ldo/view)
     
     ## License
     
