@@ -65,7 +65,7 @@ function options() {
   
   // View all departments
   const viewAllDepartments = () => {
-    var departments = Department.findAll({ raw: true }).then((data) => {
+    let departments = Department.findAll({ raw: true }).then((data) => {
       console.table(data);
       // Fires off prompts after table is displayed
       options();
@@ -74,7 +74,7 @@ function options() {
   
   // View all roles
   const viewAllRoles = () => {
-    var roles = Role.findAll({
+    let roles = Role.findAll({
       raw: true,
       // Joining Department table and Role table
       include: [{ model: Department }],
@@ -97,14 +97,14 @@ function options() {
   
   // View all employees
   const viewAllEmployees = () => {
-    var employees = Employee.findAll({
+    let employees = Employee.findAll({
       raw: true,
       // Joining Role table, and Department table with Employee table
       include: [{ model: Role, include: [{ model: Department }] }],
     }).then((data) => {
       const employeeLookup = {};
       // For loop used to grab employee names to be inserted below into managers column in newly created table
-      for (var i = 0; i < data.length; i++) {
+      for (let i = 0; i < data.length; i++) {
         const employee = data[i];
         //If the manager_id is null, use a default value ('None')
         const managerName = employee.manager_id ? employeeLookup[employee.manager_id] : "None";
