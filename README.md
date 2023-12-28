@@ -1,4 +1,4 @@
-# Note Taker
+# Employee Tracker
 
   
   ![Badge for GitHub repo top language](https://img.shields.io/github/languages/top/dpprdgls/Employee-Tracker?style=flat&logo=appveyor) ![Badge for GitHub last commit](https://img.shields.io/github/last-commit/dpprdgls/Employee-Tracker?style=flat&logo=appveyor)
